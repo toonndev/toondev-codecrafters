@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Face Detection Technology</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-color: #6c63ff;
+        --secondary-color: #2a2a2a;
+        --accent-color: #8b5cf6;
+      }
+
+      body {
+        background: linear-gradient(135deg, #13151a 0%, #1e1e2e 100%);
+        color: #ffffff;
+        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+
+      .navbar {
+        background: rgba(26, 26, 26, 0.8) !important;
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .navbar-brand {
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .hero-section {
+        background: linear-gradient(
+            to right,
+            rgba(19, 21, 26, 0.9),
+            rgba(19, 21, 26, 0.7)
+          ),
+          url("https://www.securitymagazine.com/ext/resources/secenews/2019/facial-recognition.jpg");
+        background-size: cover;
+        background-position: center;
+        padding: 120px 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      .glass-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .feature-icon {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        transition: transform 0.3s ease;
+      }
+
+      .feature-icon:hover {
+        transform: scale(1.05);
+      }
+
+      .btn-modern {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+        border: none;
+        border-radius: 30px;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+      }
+
+      .form-control {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: white;
+        padding: 12px;
+      }
+
+      .form-control:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25);
+        color: white;
+      }
+
+      .footer {
+        background: rgba(26, 26, 26, 0.8);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 30px 0;
+      }
+
+      /* Modern Animations */
+      @keyframes float {
+        0% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+        100% {
+          transform: translateY(0px);
+        }
+      }
+
+      .floating-animation {
+        animation: float 3s ease-in-out infinite;
+      }
+
+      /* Modern Text Styles */
+      h1,
+      h2,
+      h3 {
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .input-group-text {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-right: none;
+      }
+
+      .form-control {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: white;
+      }
+
+      .form-control:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25);
+        color: white;
+      }
+
+      .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .btn-modern {
+        background: linear-gradient(135deg, #6c63ff, #8b5cf6);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 99, 255, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">
+          <img
+            src="https://cdn-icons-png.flaticon.com/512/6843/6843026.png"
+            alt="Logo"
+            width="30"
+            height="30"
+            class="d-inline-block align-text-top me-2"
+          />
+          <span class="gradient-text">FaceAI</span>
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#home">หน้าแรก</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#features">คุณสมบัติ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#about">เกี่ยวกับเรา</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact">ติดต่อ</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section" id="home">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-lg-6 hero-content">
+            <h1 class="display-4 fw-bold mb-4 gradient-text">
+              Face Detection AI
+            </h1>
+            <p class="lead mb-4">
+              ยกระดับความปลอดภัยด้วยเทคโนโลยี AI ที่ล้ำสมัย
+              พร้อมระบบตรวจจับใบหน้าที่แม่นยำและรวดเร็ว
+            </p>
+            <button class="btn btn-modern btn-lg">เริ่มต้นใช้งานฟรี</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container py-5" id="features">
+      <h2 class="text-center mb-5 gradient-text">คุณสมบัติเด่น</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="glass-card h-100 p-4">
+            <div class="feature-icon">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/3132/3132909.png"
+                alt="Accuracy Icon"
+                width="50"
+                height="50"
+              />
+            </div>
+            <h5 class="card-title gradient-text">ความแม่นยำสูง</h5>
+            <p class="card-text">
+              ระบบ AI ที่ได้รับการพัฒนาให้มีความแม่นยำสูงถึง 99.9%
+              แม้ในสภาพแสงที่แตกต่างกัน
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card h-100 p-4">
+            <div class="feature-icon">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/5661/5661749.png"
+                alt="Speed Icon"
+                width="50"
+                height="50"
+              />
+            </div>
+            <h5 class="card-title gradient-text">ประมวลผลรวดเร็ว</h5>
+            <p class="card-text">
+              ประมวลผลด้วยความเร็วสูง เพียง 0.1 วินาทีต่อภาพ รองรับการใช้งานแบบ
+              Real-time
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="glass-card h-100 p-4">
+            <div class="feature-icon">
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/2716/2716652.png"
+                alt="Security Icon"
+                width="50"
+                height="50"
+              />
+            </div>
+            <h5 class="card-title gradient-text">ความปลอดภัยสูง</h5>
+            <p class="card-text">
+              มั่นใจด้วยระบบรักษาความปลอดภัยระดับสูง พร้อมการเข้ารหัสข้อมูลแบบ
+              End-to-end
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="container py-5" id="about">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <img
+            src="https://img.freepik.com/premium-photo/face-detection-verification-authentication-digital-recognition-system-scanning-face_31965-27025.jpg"
+            alt="About Us"
+            class="img-fluid rounded-3 floating-animation"
+          />
+        </div>
+        <div class="col-lg-6">
+          <h2 class="gradient-text mb-4">เกี่ยวกับเรา</h2>
+          <p class="lead">
+            เราคือผู้นำด้านเทคโนโลยี Face Detection
+            ที่มุ่งมั่นพัฒนาโซลูชันที่ล้ำสมัยด้วย AI มากว่า 10 ปี
+          </p>
+          <div class="mt-4">
+            <div class="glass-card p-3 mb-3">
+              <h5 class="gradient-text">วิสัยทัศน์</h5>
+              <p>มุ่งสู่การเป็นผู้นำด้านเทคโนโลยี AI ระดับโลก</p>
+            </div>
+            <div class="glass-card p-3">
+              <h5 class="gradient-text">พันธกิจ</h5>
+              <p>พัฒนาเทคโนโลยีที่ช่วยยกระดับความปลอดภัยและคุณภาพชีวิต</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Section -->
+    <!-- Contact Section -->
+    <div class="container py-5" id="contact">
+      <div class="row">
+        <div class="col-lg-6 mx-auto">
+          <div class="glass-card p-4">
+            <h3 class="text-center gradient-text mb-4">ติดต่อเรา</h3>
+            <form>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label text-white-50"
+                    >ชื่อ <span class="text-danger">*</span></label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <img
+                        src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+                        alt="User"
+                        width="16"
+                        height="16"
+                      />
+                    </span>
+                    <input type="text" class="form-control" required />
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label text-white-50"
+                    >นามสกุล <span class="text-danger">*</span></label
+                  >
+                  <div class="input-group">
+                    <span class="input-group-text">
+                      <img
+                        src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png"
+                        alt="User"
+                        width="16"
+                        height="16"
+                      />
+                    </span>
+                    <input type="text" class="form-control" required />
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-white-50"
+                  >อีเมล <span class="text-danger">*</span></label
+                >
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/552/552486.png"
+                      alt="Email"
+                      width="16"
+                      height="16"
+                    />
+                  </span>
+                  <input type="email" class="form-control" required />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-white-50">เบอร์โทรศัพท์</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/552/552489.png"
+                      alt="Phone"
+                      width="16"
+                      height="16"
+                    />
+                  </span>
+                  <input type="tel" class="form-control" />
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-white-50"
+                  >หัวข้อ <span class="text-danger">*</span></label
+                >
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/681/681494.png"
+                      alt="Subject"
+                      width="16"
+                      height="16"
+                    />
+                  </span>
+                  <select class="form-control" required>
+                    <option value="">เลือกหัวข้อ</option>
+                    <option>สอบถามข้อมูลเพิ่มเติม</option>
+                    <option>ขอใบเสนอราคา</option>
+                    <option>แจ้งปัญหาการใช้งาน</option>
+                    <option>ติดต่อฝ่ายขาย</option>
+                    <option>อื่นๆ</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-white-50"
+                  >ข้อความ <span class="text-danger">*</span></label
+                >
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <img
+                      src="https://cdn-icons-png.flaticon.com/512/681/681662.png"
+                      alt="Message"
+                      width="16"
+                      height="16"
+                    />
+                  </span>
+                  <textarea class="form-control" rows="4" required></textarea>
+                </div>
+              </div>
+              <div class="mb-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" required />
+                  <label class="form-check-label text-white-50">
+                    ยอมรับนโยบายความเป็นส่วนตัวและการใช้ข้อมูล
+                  </label>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-modern w-100">
+                ส่งข้อความ
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer" class="footer">
+      <div class="container">
+        <div class="text-center">
+          <div class="copyright mb-2">
+            &copy; Copyright
+            <strong><span class="gradient-text">ToonDev</span></strong
+            >. All Rights Reserved
+          </div>
+          <div class="credits">
+            Designed by
+            <a href="https://bootstrapmade.com/" class="gradient-text"
+              >ToonDev</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
